@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo list</title>
+</head>
+<body>
+    <script>
+        let toDoList = {
+            shoping: {
+                text: 'to buy smth',
+                isDone: true
+            },
+            js: {
+                text: 'finish my homework',
+            }, 
+            cleaning: {
+                text: 'to wash dishes',
+            },
+
+            addTask(noteTitle, noteText) {
+                if (!(noteTitle in this)) {
+                    let tmpObj = { 
+                        text: noteText,
+                    };
+                    this[noteTitle] = tmpObj;
+                };
+            },
+
+            deleteTask(noteTitle) {
+                delete this[noteTitle];
+            },
+
+            editTask(noteTitle, noteText) {
+                this[noteTitle].text = noteText;
+            },
+
+            doneIt(noteTitle) {
+                this[noteTitle].isDone = true;
+            },
+ 
+            returnAllTasks() {
+                let allTask = {
+                    'All tasks': '',
+                    'To do': '',
+                    'Done': ''
+                };
+
+                let countToDo = 0;
+                let countDone = 0;
+                for (const key in this) {
+                    if (this[key].isDone === true) {
+                        countDone++;
+                    } else {
+                        countToDo++;
+                    }
+                }
+
+                allTask['All tasks'] = countToDo + countDone;
+                allTask['To do'] = countToDo;
+                allTask['Done'] = countDone;
+                return allTask;
+            },
+        };
+
+        const descriptorProperties = {
+            writable: false,
+            enumerable: false,
+            configurable: false
+        };
+
+        Object.defineProperties(toDoList, {
+            addTask: descriptorProperties,
+            deleteTask: descriptorProperties,
+            editTask: descriptorProperties,
+            doneIt: descriptorProperties,
+            returnAllTasks: descriptorProperties
+        });
+
+        toDoList.addTask('phone', 'clean the gallery')
+        toDoList.doneIt('phone')
+        console.log(toDoList.returnAllTasks());
+        console.log(toDoList);
+    </script>
+</body>
+</html>
