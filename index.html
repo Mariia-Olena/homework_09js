@@ -8,81 +8,89 @@
 </head>
 <body>
     <script>
-        let toDoList = {
-            shoping: {
-                text: 'to buy smth',
-                isDone: true
-            },
-            js: {
-                text: 'finish my homework',
-            }, 
-            cleaning: {
-                text: 'to wash dishes',
-            },
-
-            addTask(noteTitle, noteText) {
-                if (!(noteTitle in this)) {
-                    let tmpObj = { 
-                        text: noteText,
-                    };
-                    this[noteTitle] = tmpObj;
-                };
-            },
-
-            deleteTask(noteTitle) {
-                delete this[noteTitle];
-            },
-
-            editTask(noteTitle, noteText) {
-                this[noteTitle].text = noteText;
-            },
-
-            doneIt(noteTitle) {
-                this[noteTitle].isDone = true;
-            },
- 
-            returnAllTasks() {
-                let allTask = {
-                    'All tasks': '',
-                    'To do': '',
-                    'Done': ''
-                };
-
-                let countToDo = 0;
-                let countDone = 0;
-                for (const key in this) {
-                    if (this[key].isDone === true) {
-                        countDone++;
-                    } else {
-                        countToDo++;
-                    }
+        const toDoList = {
+            noteList: [
+                {
+                    title: 'shoping',
+                    text: 'to buy smth',
+                    isDone: true
+                },
+                {
+                    title: 'js',
+                    text: 'finish my homework',
+                    isDone: false
+                }, 
+                {
+                    title: 'cleaning',
+                    text: 'to wash dishes',
+                    isDone: false
+                },
+            ],
+            
+            addNote(noteTitle, noteText) {
+                if (!noteTitle.trim() || !noteText.trim()) {
+                    return;
                 }
 
-                allTask['All tasks'] = countToDo + countDone;
-                allTask['To do'] = countToDo;
-                allTask['Done'] = countDone;
-                return allTask;
+                const isUnique = this.checkUnique(noteTitle);
+
+                if (isUnique) {
+                    const note = {
+                        title: noteTitle,
+                        text: noteText,
+                        isDone: false
+                    };
+
+                    this.noteList.push(note);
+                };
+            },
+
+            checkUnique(noteTitle) {
+                return !this.noteList.find(note => note.title === noteTitle);
+            },
+
+            deleteNote(noteTitle) {
+                const deleteIndex = this.noteList.findIndex(note => note.title === noteTitle);
+
+                if (deleteIndex !== -1) {
+                    this.noteList.splice(deleteIndex, 1);
+                };
+            },
+
+            editNote(noteTitle, noteText) {
+                const editIndex = this.noteList.findIndex(note => note.title === noteTitle);
+                
+                if (editIndex !== -1) {
+                    this.noteList[editIndex].text = noteText;
+                };
+            },
+
+            toggleIsDone(noteTitle) {
+                const index = this.noteList.findIndex(note => note.title === noteTitle);
+                
+                if (index !== -1) {
+                    this.noteList[index].isDone = !this.noteList[index].isDone;
+                };
+            },
+ 
+            get statistic() {
+                return this.noteList.reduce((accum, note) => {
+                    note.isDone ? accum['Done']++ : accum['To do']++;
+
+                    return accum;
+                }, {
+                    'All Notes': this.noteList.length,
+                    'To do': 0,
+                    'Done': 0
+                });
             },
         };
 
-        const descriptorProperties = {
-            writable: false,
-            enumerable: false,
-            configurable: false
+        for (const key in toDoList) {
+            Object.defineProperty(toDoList, key, {
+                configurable: false
+            });
         };
-
-        Object.defineProperties(toDoList, {
-            addTask: descriptorProperties,
-            deleteTask: descriptorProperties,
-            editTask: descriptorProperties,
-            doneIt: descriptorProperties,
-            returnAllTasks: descriptorProperties
-        });
-
-        toDoList.addTask('phone', 'clean the gallery')
-        toDoList.doneIt('phone')
-        console.log(toDoList.returnAllTasks());
-        console.log(toDoList);
     </script>
 </body>
 </html>
